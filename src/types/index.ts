@@ -1,11 +1,6 @@
 import { Method } from 'axios';
 
-export interface AppIds {
-  [bundle: string]: Config
-}
-
 export interface Config {
-  baseURL: string,
   sampleDistance: number,
   sampleInterval: number,
   dataUrl: string,
@@ -15,7 +10,8 @@ export interface Config {
   meterRadius: number,
   intersectMilliseconds: number,
   bufferUnits: string,
-  debug: boolean,
+  sickGeometryLongIndex: number,
+  sickGeometryLatIndex: number,
   sickMessage: {
     he: { title: string, body: string },
     en: { title: string, body: string },
@@ -32,6 +28,20 @@ export interface Config {
     ar: string
   },
   reportForm: {
+    he: string,
+    en: string,
+    am: string,
+    ru: string,
+    ar: string
+  },
+  usageTerms: {
+    he: string,
+    en: string,
+    am: string,
+    ru: string,
+    ar: string
+  },
+  privacyTerms: {
     he: string,
     en: string,
     am: string,

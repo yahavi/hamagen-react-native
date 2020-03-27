@@ -12,7 +12,7 @@ export const toggleWebview = (isShow: boolean, usageType:string) => (dispatch: a
 
 export const checkForceUpdate = () => async (dispatch: any) => {
   try {
-    const { data: { ios, android, shouldForceIOS, shouldForceAndroid, terms } } = await axios.get(`${config.versionsUrl}?r=${Math.random()}`, { headers: { 'Content-Type': 'application/json;charset=utf-8' } });
+    const { data: { ios, android, shouldForceIOS, shouldForceAndroid, terms } } = await axios.get(`${config().versionsUrl}?r=${Math.random()}`, { headers: { 'Content-Type': 'application/json;charset=utf-8' } });
 
     const termsVersion = JSON.parse(await AsyncStorage.getItem(CURRENT_TERMS_VERSION) || '0');
 
@@ -22,14 +22,24 @@ export const checkForceUpdate = () => async (dispatch: any) => {
       return dispatch({ type: SHOW_FORCE_TERMS, payload: { terms } });
     }
 
-    const storeVersion = IS_IOS ? ios : android;
-    const appVersion = DeviceInfo.getVersion();
+    const serverVersion = (IS_IOS ? ios : android).split('.').map((level: string) => parseFloat(level));
+    const appVersion = DeviceInfo.getVersion().split('.').map((level: string) => parseFloat(level));
     const shouldForce = IS_IOS ? shouldForceIOS : shouldForceAndroid;
 
-    if ((appVersion !== storeVersion) && shouldForce) {
+    if (shouldForce && isOlderVersion(serverVersion, appVersion)) {
       dispatch({ type: SHOW_FORCE_UPDATE });
     }
   } catch (error) {
     onError({ error });
   }
+};
+
+const isOlderVersion = (serverVersion: number[], appVersion: number[]) => {
+  for (let i = 0; i < serverVersion.length; i++) {
+    if (serverVersion[i] > appVersion[i]) {
+      return true;
+    }
+  }
+
+  return false;
 };
